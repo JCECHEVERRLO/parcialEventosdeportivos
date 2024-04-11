@@ -1,0 +1,9 @@
+10 04 2024 08:36:33 [POST] /deportes {} {"code":"g5","name":"airsoft","descripcion":"deporte  .","numero canchas":6,"cantidad equipos":20} ::1
+10 04 2024 08:37:06 [DELETE] /deportes/1 {} {} ::1
+10 04 2024 08:37:28 [GET] /deportes/futbol {} {} ::1
+10 04 2024 08:37:49 [PUT] /deportes/2 {} {"code":"kj5"} ::1
+10 04 2024 08:49:54 [POST] /deportes {} {"code":"y5","name":"escalada","descripcion":"deporte  .","numero canchas":6,"cantidad equipos":20} ::1
+10 04 2024 08:50:17 [POST] /deportes {} {"code":"y5","name":"squach","descripcion":"deporte  .","numero canchas":6,"cantidad equipos":20} ::1
+10 04 2024 09:05:32 [POST] /deportes {} {"code":"y5","name":"k","descripcion":"deporte  .","numero canchas":6,"cantidad equipos":20} ::1
+10 04 2024 09:05:42 [POST] /deportes {} {"code":"y5","name":"kuy","descripcion":"deporte  .","numero canchas":6,"cantidad equipos":20} ::1
+10 04 2024 09:10:43 [POST] /deportes {} {"code":"y5","name":"wodsball","descripcion":"deporte  .","numero canchas":6,"cantidad equipos":20} ::1
