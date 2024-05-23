@@ -2,163 +2,126 @@ const express = require("express");
 const Joi = require('joi');
 const fs = require("fs");
 const moment = require('moment');
-const {leerArchivo, escribirArchivo} = require('./src/files.js');
- const { validarDeporte } = require('./validations'); 
- const logRequest = require('./access.log');
+const { leerArchivo, escribirArchivo } = require('./src/files.js');
+const { validarDeporte } = require('./validations');
+const path = require('path');
+const app = express();
+const agregarCreatedAt = require('./agregarCreatedAtmiddleware.js');
 
-const app = express()
+function logRequest(req, res, next) {
+    const now = new Date();
+    const timestamp = now.toISOString();
+    const formattedTimestamp = timestamp.replace('T', ' ').split('.')[0];
+    const requestMethod = req.method;
+    const requestUrl = req.originalUrl;
+    const queryParams = JSON.stringify(req.query);
+    const requestBody = JSON.stringify(req.body);
+    const clientIp = req.ip;
 
+    const logLine = `${formattedTimestamp} [${requestMethod}] [${requestUrl}] [${queryParams}] [${requestBody}] [${clientIp}]\n`;
 
-function addCreatedAt(req, res, next) {
-  const fechaActual = moment().format('YYYY-MM-DD hh:mm');
-  req.body.created_at = fechaActual;
-  next();
+    fs.appendFile(path.join(__dirname, './access_log.txt'), logLine, (err) => {
+        if (err) {
+            console.error('Error al escribir en el archivo de registro: ', err);
+        }
+    });
+
+    next();
 }
 
+app.use(express.json());
+app.use(logRequest);
+app.use(agregarCreatedAt);
 
+// Rutas
+app.get('/deportes', (req, res) => {
+    const filtro = req.query.filtro;
+    const deportes = leerArchivo('./Db.json');
 
-app.use(express.json())
-
-
-
-// app.use((req, res,next) => {
-//   console.log('middleaWARE DE APP');
-//   console.log(req.method, req.url)
-//   next();
-  
-// })
-
-// rutas
-
-// // index original 
-//  app.get('/deportes', (req, res) => {
-//         // leer archivo 
-//         const deportes = leerArchivo('./Db.json');
-//        res.send(deportes)
-//       })
-
-  
-app.get('/deportes',  (req, res) => {
-  logRequest(req);
-  const filtro = req.query.filtro;
-  const deportes = readFile('./Db.json');
-
-  if (filtro) {
-      const deportesFiltrados = deportes.filter(deporte => deporte.name.toLowerCase().includes(filtro.toLowerCase()));
-      res.render('deñortes/index', { deportes: deportesFiltrados });
-  } else {
-      res.render('deportes/index', { deportes: deportes });
-  }
+    if (filtro) {
+        const deportesFiltrados = deportes.filter(deporte => deporte.name.toLowerCase().includes(filtro.toLowerCase()));
+        res.json(deportesFiltrados);
+    } else {
+        res.json(deportes);
+    }
 });
 
-// show
-app.get('/deportes/:id', // primer parametro 
-(req, res,next) => {// segundo parametro 
-//   console.log('middelaware a nivel de ruta ')
-  next();
+// Mostrar deporte por nombre
+app.get('/todos/:nombre', (req, res, next) => {
+    const nombre = req.params.nombre;
+    const deportes = leerArchivo('./Db.json');
+    const deporte = deportes.find(deporte => deporte.nombre === nombre);
 
-  
-},
+    if (!deporte) {
+        res.status(404).send('No se encuentra disponible');
+        return;
+    }
 
+    res.json(deporte);
+});
 
-(req, res) => {
-  const id = req.params.id
-  const deportes = leerArchivo('./Db.json') 
-  const deporte = deportes.find(deporte=>deporte.id === parseInt(id))
-
-  // no existe 
-  if (! deporte ==undefined){
-    res.status(404).send('no existe')
-    return
-  }
-
-  // existe 
-
-  res.send(deporte)
-  console.log('hola')
-})
-
-// Ruta para almacenar un nuevo deporte punto uno parcial 
-// store ruta original
 // Ruta para almacenar un nuevo deporte
-app.post('/deportes',  addCreatedAt,(req, res) => {
-  logRequest(req);
-  // Validar los datos recibidos en la solicitud utilizando la función importada
-  const { error } = validarDeporte(req.body);
-  if (error) return res.status(400).send(error.details[0].message); // Devolver el mensaje de error si la validación falla
+app.post('/deportes', (req, res) => {
+    const nuevodeporte = req.body;
+    let deportes = leerArchivo('./Db.json');
 
-  const deporte = req.body;
-  const deportes = leerArchivo('./Db.json');
-  deporte.id = deportes.length + 1;
-  deportes.push(deporte);
-  escribirArchivo('./Db.json', deportes);
-  res.status(201).send(deporte);
+    deportes.push(nuevodeporte);
+    escribirArchivo('./Db.json', deportes);
+
+    res.send({ mensaje: 'Deporte agregado correctamente', deporte: nuevodeporte });
 });
 
 // Ruta para actualizar un deporte existente
-app.put('/deportes/:id', addCreatedAt, (req, res) => {
-  logRequest(req);
-  const id = req.params.id;
-  const deportes = leerArchivo('./Db.json');
-  const deporte = deportes.find(deporte => deporte.id === parseInt(id));
+app.put('/deportes/:id', (req, res) => {
+    const id = req.params.id;
+    const deportes = leerArchivo('./Db.json');
+    const deporte = deportes.find(deporte => deporte.id === parseInt(id));
 
-  if (!deporte) return res.status(404).send('El deporte no existe');
+    if (!deporte) return res.status(404).send('El deporte no existe');
 
-  // Validar los datos recibidos 
-  const { error } = validarDeporte(req.body);
-  if (error) return res.status(400).send(error.details[0].message); 
+    const { error } = validarDeporte(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-  const newDeporte = { ...deporte, ...req.body };
-  const index = deportes.indexOf(deporte);
-  deportes[index] = newDeporte;
-  escribirArchivo('./Db.json', deportes);
-  res.send(newDeporte);
+    const newDeporte = { ...deporte, ...req.body };
+    const index = deportes.indexOf(deporte);
+    deportes[index] = newDeporte;
+    escribirArchivo('./Db.json', deportes);
+    res.send(newDeporte);
 });
 
-// put update parcial 
-app.put('/deportes/update',(req, res) => {
-  logRequest(req);
-  
-  let deportes = leerArchivo('./Db.json');
+// Actualizar timestamp de todos los deportes
+app.put('/deportes/update', (req, res) => {
+    let deportes = leerArchivo('./Db.json');
+    const fechaActual = moment().format('YYYY-MM-DD hh:mm');
 
-  const fechaActual = moment().format('YYYY-MM-DD hh:mm');
+    deportes.forEach(deporte => {
+        if (!deporte.updated_at) {
+            deporte.updated_at = fechaActual;
+        }
+    });
 
-  // Recorrer todos los registros 
-  deportes.forEach(deporte => {
-    if (!deporte.updated_at) {
-      deporte.updated_at = fechaActual;
-    }
-  });
-  
-
-  // Escribir los registros actualizados en el archivo JSON
-  escribirArchivo('./Db.json', deportes);
-
-  res.send(deportes); // Enviar la respuesta con los registros actualizados
+    escribirArchivo('./Db.json', deportes);
+    res.send(deportes);
 });
-// destroy
+
+// Eliminar un deporte por ID
 app.delete('/deportes/:id', (req, res) => {
-  logRequest(req);
-  const id = req.params.id
-  const deportes = leerArchivo('./Db.json')
-  const deporte=deportes.find(deporte =>deporte.id === parseInt(id))  
+    const id = req.params.id;
+    const deportes = leerArchivo('./Db.json');
+    const deporte = deportes.find(deporte => deporte.id === parseInt(id));
 
-   // no existe 
-   if (! deporte) {
-    res.status(404).send('no existe')
-    return
-  }
+    if (!deporte) {
+        res.status(404).send('No existe');
+        return;
+    }
 
-    // existe actualizamos 
-    const index = deportes.indexOf(deporte)
-    deportes.splice(index,1)
+    const index = deportes.indexOf(deporte);
+    deportes.splice(index, 1);
+    escribirArchivo('./Db.json', deportes);
+    res.send(deporte);
+});
 
-    //escribimos en el archivo 
-    escribirArchivo('./Db.json',deportes) //
-    res.send(deporte)
-    
-})
-// levantando el servido r para escuchar 
-app.listen(3000,() => {
+// Levantando el servidor
+app.listen(3000, () => {
     console.log("listening on port 3000 ...");
-})
+});

@@ -7,3 +7,33 @@
 10 04 2024 09:05:32 [POST] /deportes {} {"code":"y5","name":"k","descripcion":"deporte  .","numero canchas":6,"cantidad equipos":20} ::1
 10 04 2024 09:05:42 [POST] /deportes {} {"code":"y5","name":"kuy","descripcion":"deporte  .","numero canchas":6,"cantidad equipos":20} ::1
 10 04 2024 09:10:43 [POST] /deportes {} {"code":"y5","name":"wodsball","descripcion":"deporte  .","numero canchas":6,"cantidad equipos":20} ::1
+22 05 2024 06:45:48 [GET] /deportes {} {} ::1
+22 05 2024 06:51:30 [GET] /deportes {} {} ::1
+22 05 2024 07:07:42 [GET] /deportes {} {} ::1
+22 05 2024 07:11:27 [GET] /deportes {} {} ::1
+22 05 2024 07:17:51 [GET] /deportes {} {} ::1
+22 05 2024 08:09:26 [GET] /deportes {} {} ::1
+22 05 2024 08:16:17 [GET] /deportes {} {} ::1
+22 05 2024 08:17:29 [GET] /deportes {} {} ::1
+22 05 2024 08:19:15 [POST] /deportes {} {"code":"N123","name":"GOLF","descripcion":"deporte  .","numero canchas":3,"cantidad equipos":20,"created_at":"2024-05-22 08:19"} ::1
+22 05 2024 08:19:48 [PUT] /deportes/67 {} {"code":"kj5","created_at":"2024-05-22 08:19"} ::1
+22 05 2024 08:21:28 [GET] /deportes {} {} ::1
+22 05 2024 10:30:45 [GET] /deportes {} {} ::1
+2024-05-23 04:06:08 [GET] [/deportes] [{}] [{}] [::1]
+2024-05-23 04:09:07 [GET] [/deportes] [{}] [{}] [::1]
+2024-05-23 04:19:39 [GET] [/deportes] [{}] [{"created_at":"2024-05-22 11:19"}] [::1]
+2024-05-23 04:19:38 [GET] [/deportes] [{}] [{}] [::1]
+2024-05-23 04:33:18 [GET] [/deportes] [{}] [{}] [::1]
+2024-05-23 04:33:18 [GET] [/deportes] [{}] [{"created_at":"2024-05-22 11:33"}] [::1]
+2024-05-23 04:33:55 [GET] [/deportes] [{}] [{}] [::1]
+2024-05-23 04:33:55 [GET] [/deportes] [{}] [{"created_at":"2024-05-22 11:33"}] [::1]
+2024-05-23 04:34:00 [POST] [/deportes] [{}] [{"code":"N123","name":"GOLF","descripcion":"deporte  .","numero canchas":3,"cantidad equipos":20}] [::1]
+2024-05-23 04:34:23 [PUT] [/deportes/67] [{}] [{"code":"kj6"}] [::1]
+2024-05-23 04:34:43 [PUT] [/deportes/futbol] [{}] [{"code":"kj6"}] [::1]
+2024-05-23 04:37:24 [POST] [/deportes] [{}] [{"code":"N23","name":"hh","descripcion":"deporte  .","numero canchas":3,"cantidad equipos":20}] [::1]
+2024-05-23 04:38:44 [POST] [/deportes] [{}] [{"code":"N23","name":"hh","descripcion":"deporte  .","numero canchas":3,"cantidad equipos":20}] [::1]
+2024-05-23 04:38:58 [GET] [/deportes] [{}] [{}] [::1]
+2024-05-23 04:38:58 [GET] [/deportes] [{}] [{"created_at":"2024-05-22 11:38"}] [::1]
+2024-05-23 04:39:03 [GET] [/deportes] [{}] [{}] [::1]
+2024-05-23 04:39:03 [GET] [/deportes] [{}] [{"created_at":"2024-05-22 11:39"}] [::1]
+2024-05-23 04:41:46 [GET] [/deportes] [{}] [{}] [::1]
